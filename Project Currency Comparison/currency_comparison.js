@@ -23,7 +23,7 @@ export default class CurrencyComparison {
       salary: this.salary,
       USD: this.hourlyPayUSD(1)
     }
-    hourlyPayComparison[`${currency}`] = this.hourlyPayUSD(exchangeRate)//sets a new key This is called dynamic property assignment or computed property name in JavaScript
+    hourlyPayComparison[`${currency}`] = this.hourlyPayUSD(exchangeRate)//sets a new key. This is called dynamic property assignment or computed property name in JavaScript
 
     return useData(hourlyPayComparison, currency) // this is the callback function passing values to the instance call back function. return useData(hourlyPayComparison, currency) is calling the callback function you provided (the instance callback), and passing those values to it. This is how the data gets from the method to your callback
   }
