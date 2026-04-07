@@ -57,7 +57,7 @@ it("Respond with different salaries based on currency", () => {
   }
 
   //act
-  testSalary.response(currency, exchangeRate, (result) => {
+  testSalary.response(currency, exchangeRate, (result, currency) => { //currency is not needed for the test only result "hourlyPayComparison"
     //assert
     
   })
