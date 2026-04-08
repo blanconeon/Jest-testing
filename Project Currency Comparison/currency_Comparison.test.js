@@ -57,7 +57,7 @@ it("Respond with different salaries based on currency", () => {
   }
 
   //act
-  testSalary.response(currency, exchangeRate, (result, currency) => { //currency is not needed for the test only result "hourlyPayComparison"
+  testSalary.response(currency, exchangeRate, (result, currency) => { //currency is not wanted for the test only result "hourlyPayComparison". so one could just extract  testSalary.response(currency, exchangeRate, (result).  
 
   //assertions  & matcher Functions from Jest, for example .toEqual
    expect(result).toEqual(expectedValue);   
@@ -73,7 +73,7 @@ it("Receives current currency exchange data", async ()=>{
     data: {
       "base": "USD",
       "rates": {
-        "CCD": 50,
+        "CCD": 50, //CCD just represents a sample currency code in reality we would egt all the rates.
       },
       "date": "2021-05-17"
     }
@@ -81,11 +81,47 @@ it("Receives current currency exchange data", async ()=>{
   const expectedValue = [{"CCD": 50}, "Mock"];
 
   // Mock the resolved value of fetchData
-
+  fetchData.mockResolvedValueOnce(mockResponse); // this code automatically replaces the fetchData inside fetchCurrentExchange and returns expectedValue.
   
   //act
   const actualValue = await testSalary.fetchCurrentExchange() 
   
   //assert
- 
+ expect(expectedValue).toEqual(actualValue);
 })
+
+
+/* The mockResponse and expectedValue are not supposed to be identical. Here’s why:
+
+mockResponse is the full response returned by your mocked fetchData function.
+expectedValue is what your fetchCurrentExchange() method returns.
+Inside fetchCurrentExchange(), the code does this:
+
+return await fetchData().then(res => {
+  return [res.data.rates, res.status]
+})
+
+Copy code
+
+So, it takes the rates object from res.data and the status from res, and returns them as an array:
+
+[res.data.rates, res.status]
+
+Copy code
+
+That’s why expectedValue is [{"CCD": 50}, "Mock"]—it matches the structure returned by fetchCurrentExchange(), not the full mock response.
+
+
+
+
+
+That’s a good observation. The `fetchCurrentExchange` method itself does **not** use the `salary` value stored in `testSalary`. It only fetches exchange rates and status.
+
+However, it is still a method of the `CurrencyComparison` class, which means it is available to any instance, including `testSalary`. The relevance is that `fetchCurrentExchange` provides the exchange rates, which can then be used by other methods in the same instance (like `currencyConversion` or `hourlyPayUSD`) that **do** use the salary.
+
+So, while `fetchCurrentExchange` does not use the salary directly, it is part of the workflow for currency comparison in the `CurrencyComparison` class. The test is just checking that this method returns the correct structure, not that it uses the salary.
+*/
+
+
+
+
