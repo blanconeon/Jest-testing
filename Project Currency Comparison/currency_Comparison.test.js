@@ -1,5 +1,5 @@
 import CurrencyComparison from './currency_comparison';
-
+import fetchData from "./utils/fetch-data.js.";
 // Task 10: Import and mock fetchData
 
 const testSalary = new CurrencyComparison(50000)
@@ -46,7 +46,7 @@ expect(actualValueFromEur).toBe(expectedValueFromEur);
 
 
 // Task 6: Complete this test!
-it("Respond with different salaries based on currency", () => {
+it("Respond with different salaries based on currency", (done) => {
   //arrange
   const currency = "CAD"
   const exchangeRate = 1.21
@@ -55,15 +55,26 @@ it("Respond with different salaries based on currency", () => {
     CAD: 20.66,
     salary: 50000,
   }
-
   //act
-  testSalary.response(currency, exchangeRate, (result, currency) => { //currency is not wanted for the test only result "hourlyPayComparison". so one could just extract  testSalary.response(currency, exchangeRate, (result).  
+  testSalary.response(currency, exchangeRate, (result, currency) => { //currency is not needed for the test only result "hourlyPayComparison"
+  try {
+   //assertions  & matcher Functions from Jest, for example .toEqual
+   expect(result).toEqual(expectedValue);
+   ////rememeber The matcher .toBe() checks for strict equality (same object in memory), but you want to check if the objects have the same properties and values..toEqual() does that
+   done();
+  } catch (error) {
+    done(error);
+  }   
+  });
+});
 
-  //assertions  & matcher Functions from Jest, for example .toEqual
-   expect(result).toEqual(expectedValue);   
-    //rememeber The matcher .toBe() checks for strict equality (same object in memory), but you want to check if the objects have the same properties and values..toEqual() does that
-  })
-})
+   /* You are correct, `.response` itself is not asynchronous—it does not return a Promise or use `async/await`. However, it **uses a callback**, and in testing, callbacks can sometimes cause timing issues if not handled properly.
+
+The use of `done` and `try...catch` in the test is a precaution to ensure that:
+- If an assertion fails inside the callback, the error is caught and passed to Jest using `done(error)`.
+- This helps Jest know when the test is finished and if it failed, even though the method is not truly asynchronous.
+
+So, while `.response` is not async, the test uses this pattern to safely handle errors in callback-based code.*/
 
 // Task 10 & 11: Complete this test!
 it("Receives current currency exchange data", async ()=>{
@@ -120,6 +131,33 @@ That’s a good observation. The `fetchCurrentExchange` method itself does **not
 However, it is still a method of the `CurrencyComparison` class, which means it is available to any instance, including `testSalary`. The relevance is that `fetchCurrentExchange` provides the exchange rates, which can then be used by other methods in the same instance (like `currencyConversion` or `hourlyPayUSD`) that **do** use the salary.
 
 So, while `fetchCurrentExchange` does not use the salary directly, it is part of the workflow for currency comparison in the `CurrencyComparison` class. The test is just checking that this method returns the correct structure, not that it uses the salary.
+
+
+
+
+
+async await normally handles errors, therefore in a test no need for try catch. however:
+
+In regular API calls, developers often use `try...catch` with `async/await` to handle errors gracefully. This allows them to manage what happens if the request fails, such as showing an error message or retrying the request.
+
+Example:
+```js
+async function getData() {
+  try {
+    const response = await fetchData();
+    // handle successful response
+  } catch (error) {
+    // handle error, e.g., show a message or log it
+  }
+}
+```
+
+This pattern is common in real applications to ensure errors are managed and users get feedback if something goes wrong.
+
+
+
+
+
 */
 
 
